@@ -1,1 +1,67 @@
+ВИКОРИСТАННЯ ШІ ПІД ЧАС РОЗРОБКИ
+Назва інструменту та версія: модель GPT-5.3, план Go
+Мета використання: Використання ШІ було необхідне через відсутність досвіду роботи з Android, Kotlin та Jetpack Compose. ШІ допомагав зрозуміти архітектуру додатку, роботу з Retrofit, ViewModel, навігацію та швидко реалізувати функції бронювання книг.
+Внесок автора: Я самостійно підключила додаток до власного бекенду на Flask, адаптувала ендпоінти під свою базу даних, виправляла помилки компіляції, тестувала запити, налаштовувала AndroidManifest.xml для мережевих дозволів та адаптувала інтерфейс під вимоги лабораторної роботи.
 
+1. Запит для створення архітектури проєкту
+Запит до ШІ: я ніколи не працювала з android. поясни як створити простий застосунок на kotlin з jetpack compose, retrofit та mvvm. покажи структуру пакетів і приклад коду
+Результат: ШІ показав базову структуру проєкту: data/, presentation/, utils/, пояснив призначення ViewModel, Repository та RetrofitClient. Я використала це як шаблон і замінила прикладні дані на свої моделі.
+Фрагмент коду, отриманий від ШІ:
+object RetrofitClient {
+    private const val BASE_URL = "http://10.0.2.2:5000/"
+    val api: LibraryApi by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(LibraryApi::class.java)
+    }
+}
+
+2. Запит для створення екрану авторизації
+Запит до ШІ: як зробити екран входу в jetpack compose з полями email/password та обробкою помилок?
+Результат: ШІ показав приклад LoginScreen з OutlinedTextField, Button та обробкою станів Loading/Success/Error. Я адаптувала його під свій AuthViewModel.
+Фрагмент коду, отриманий від ШІ:
+@Composable
+fun LoginScreen(onLoginSuccess: () -> Unit) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    
+    Button(onClick = { /* виклик ViewModel */ }) {
+        Text("Увійти")
+    }
+}
+
+3. Запит для реалізації бронювання книги
+Запит до ШІ: як зробити кнопку "Забронювати" у списку книг, щоб при натисканні відправлявся post-запит і список оновлювався?
+Результат: ШІ пояснив, як додати параметр onReserveClick у BookItem, викликати метод reserveBook у ViewModel та оновити список після успіху. Я реалізувала це та додала обробку помилок.
+Фрагмент коду, отриманий від ШІ:
+fun reserveBook(bookId: Int) {
+    viewModelScope.launch {
+        val result = repository.createReservation(bookId)
+        if (result is Result.Success) loadActiveReservations()
+    }
+}
+
+4. Запит для навігації між екранами
+Запит до ШІ: як зробити bottom navigation bar у jetpack compose з 4 вкладками та зберегти стан кожного екрану?
+Результат: ШІ показав приклад з Scaffold, NavigationBar та sealed class Screen. Я додала екрани "Каталог", "Позики", "Бронь", "Профіль" та реалізувала перемикання.
+Фрагмент коду, отриманий від ШІ:
+sealed class Screen {
+    object Catalog : Screen()
+    object Loans : Screen()
+    object Profile : Screen()
+}
+
+5. Запит для виходу з акаунту
+Запит до ШІ: як зробити кнопку "Вийти", щоб очистити збережені дані користувача і повернути на екран входу?
+Результат: ШІ пояснив, як викликати DataStoreHelper.clearSession() у ViewModel та змінити стан currentScreen у MainActivity. Я реалізувала це та перевірила, що після виходу сесія очищається.
+Фрагмент коду, отриманий від ШІ:
+fun logout() {
+    viewModelScope.launch {
+        DataStoreHelper.clearSession(context)
+        _session.value = null
+    }
+}
+
+Висновок: ШІ значно прискорив розробку, надаючи готові приклади коду та пояснення архітектурних рішень. Весь отриманий код був адаптований, протестований та інтегрований у мій проєкт самостійно.
