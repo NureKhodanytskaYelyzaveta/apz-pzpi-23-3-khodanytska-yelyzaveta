@@ -1,1 +1,660 @@
+Міністерство освіти і науки України 
+Харківський національний університет радіоелектроніки
 
+
+
+
+Кафедра програмної інженерії
+
+
+Звіт
+з лабораторної роботи № 3
+з дисципліни «Архітектура програмного забезпечення»
+на тему: «Програмна система для автоматизації роботи бібліотек»
+
+
+
+Виконала:                                                                 Перевірив:
+ст. гр. ПЗПІ-23-3                                                ст. викладач катедри ПІ
+Ходаницька Єлизавета                                         Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+
+
+
+
+
+Харків - 2026
+________________
+
+
+1 ІСТОРІЯ ЗМІН
+№
+	Дата
+	Версія звіту
+	Опис змін та виправлень
+	1
+	28.04.2026
+	0.1
+	Початок роботи над звітом
+	2
+	01.05.2026
+	0.2
+	Редагування попередньої версії
+	
+
+2 ЗАВДАННЯ 
+Метою лабораторної роботи є розробка front-end частини програмної системи, яка повинна підтримувати роботу клієнтів у веб-режимі та забезпечувати адміністрування системи, тобто мати окремий інтерфейс для звичайних користувачів і окремий — для адміністраторів (відповідно до ролей користувачів вашої системи). 
+
+
+3 ОПИС ВИКОНАНОЇ РОБОТИ 
+У процесі розробки веб-застосунку для автоматизації роботи бібліотеки було прийнято ряд архітектурних і технологічних рішень, спрямованих на забезпечення цілісності системи, зручності використання та розширюваності функціоналу. Застосунок реалізовано за клієнт-серверною архітектурою з використанням фреймворку Django, що дозволило організувати чітке розділення між рівнями представлення, бізнес-логіки та доступу до даних. Рівень відображення реалізовано за допомогою Django Templates, які забезпечують серверний рендеринг HTML-сторінок та динамічну підстановку даних у шаблони. Рівень бізнес-логіки представлено у вигляді функцій у файлі views.py, які обробляють HTTP-запити, виконують перевірки, керують логікою роботи системи та взаємодіють з моделями. Рівень доступу до даних реалізовано через Django ORM, що дозволяє працювати з базою даних SQLite у вигляді Python-об'єктів без написання SQL-запитів.
+В якості основного технологічного стеку було обрано Django через наявність вбудованої системи автентифікації та авторизації, автоматично згенерованої адміністративної панелі, а також засобів захисту від типових вразливостей, таких як CSRF, XSS та SQL Injection. Для створення користувацького інтерфейсу було використано Bootstrap 5, що забезпечує адаптивний дизайн, готові компоненти інтерфейсу та сучасний вигляд без значних витрат часу на стилізацію.
+У системі реалізовано розділення інтерфейсів для різних ролей користувачів. Для звичайних користувачів передбачено доступ до каталогу книг, можливість пошуку, бронювання та перегляду власного профілю. Для бібліотекаря реалізовано окрему панель управління, яка містить функціонал видачі книг, повернення, обробки бронювань та редагування каталогу. Таке рішення дозволяє дотримуватися принципу розмежування доступу та підвищує зручність користування системою. Така структура взаємодії користувачів із системою представлена на діаграмі Use Case (див. рис. Б.1).
+Також було прийнято рішення забезпечити інтеграцію веб-застосунку з мобільним застосунком, розробленим раніше, через спільну базу даних. Веб-застосунок на Django та мобільний клієнт взаємодіють з однією базою SQLite, що дозволяє забезпечити узгодженість даних між різними клієнтами та централізовану бізнес-логіку. Це відповідає архітектурі, описаній у попередній лабораторній роботі, де мобільний застосунок взаємодіє з сервером через REST API. Загальна структура взаємодії компонентів системи наведена на діаграмі компонентів (див. рис. Б.2).
+Під час розробки також використовувалися інструменти штучного інтелекту. 
+Назва інструменту та версія: модель GPT-5.3, план Go. 
+Мета використання полягала у прискоренні розробки веб-застосунку, зокрема у розумінні принципів роботи Django, налаштуванні маршрутизації, реалізації системи авторизації, обробці форм та побудові інтерфейсу. ШІ допомагав генерувати приклади коду, пояснював помилки та пропонував варіанти їх виправлення. 
+Внесок автора полягав у самостійному інтегруванні отриманих рішень у проєкт, адаптації коду під власну структуру бази даних, налагодженні взаємодії між компонентами системи, тестуванні функціоналу та виправленні логічних і технічних помилок.
+Архітектура веб-застосунку базується на патерні MTV (Model-Template-View), який використовується у Django та є адаптацією класичної MVC-архітектури. Взаємодія компонентів відбувається наступним чином. Користувач через браузер надсилає HTTP-запит, наприклад при відкритті сторінки каталогу або виконанні дії, такої як бронювання книги. Django обробляє цей запит через систему маршрутизації, визначену у файлі urls.py, і передає його відповідній функції у views.py. У view виконується основна бізнес-логіка: отримання даних з бази через моделі, перевірка прав доступу, обробка введених користувачем даних та формування відповіді. Послідовність дій користувача та обробка запитів у системі відображені на діаграмі діяльності (див. рис. Б.3).
+Моделі, визначені у файлі models.py, описують структуру бази даних і взаємозв’язки між сутностями, такими як користувачі, книги, позики та бронювання. Django ORM виступає посередником між кодом та базою даних, автоматично формуючи SQL-запити при виконанні операцій читання або запису. Наприклад, при виклику Book.objects.all() відбувається запит до таблиці книг, а при збереженні об’єкта виконується операція INSERT або UPDATE. Зміни станів книги в процесі її використання відображено на діаграмі станів (див. рис. Б.4).
+Після виконання логіки view передає отримані дані у шаблон через функцію render. Шаблон обробляється системою Django Templates, яка підставляє значення змінних та виконує шаблонні конструкції, після чого формується HTML-сторінка, яка повертається користувачу у браузер.
+Окремо реалізовано взаємодію між веб-застосунком і мобільним клієнтом. Як і було показано на UML-діаграмах попередньої роботи, мобільний застосунок надсилає запити до серверної частини через REST API, після чого сервер взаємодіє з базою даних і повертає результат у форматі JSON. Оскільки веб-застосунок використовує ту ж саму базу даних, він автоматично отримує актуальні дані без необхідності додаткової синхронізації. Це дозволяє бібліотекарю в веб-інтерфейсі бачити бронювання, створені з мобільного застосунку, і виконувати з ними подальші дії.
+Взаємодія компонентів інтерфейсу реалізована через HTML-форми, які надсилають POST-запити на сервер. Для захисту використовується CSRF-токен, що запобігає підробці запитів. Після обробки запиту застосовується підхід Post/Redirect/Get, що запобігає повторному виконанню дій при оновленні сторінки. Для повідомлення користувача про результати операцій використовується Django Messages Framework. Динамічні елементи інтерфейсу, такі як пошук або підтвердження дій, реалізовані за допомогою JavaScript, але основна логіка обробки даних виконується на сервері, що забезпечує контроль цілісності даних і безпечність системи.
+
+
+4 ВИСНОВКИ
+У результаті виконання роботи було розроблено веб-застосунок для автоматизації роботи бібліотеки, який забезпечує основний функціонал для користувачів і бібліотекаря та інтегрується з мобільним застосунком через спільну базу даних. Обрана архітектура та технологічні рішення дозволили реалізувати зручний інтерфейс, коректну обробку даних і розмежування доступу між ролями. Система демонструє узгоджену взаємодію між компонентами та може бути розширена в майбутньому без суттєвих змін у структурі.
+
+
+5 ВИКОРИСТАНІ ДЖЕРЕЛА 
+1. Getting started with Django. Django Project. URL: https://www.djangoproject.com/start/ (date of access: 28.04.2026).
+2. W3Schools.com. W3Schools Online Web Tutorials. URL: https://www.w3schools.com/django/ (date of access: 28.04.2026).
+3. Diagram design 101: tips for effective visual diagrams to supercharge innovation. MiroBlog. URL: https://miro.com/blog/diagram-design/ (date of access: 28.04.2026).
+
+
+________________
+
+
+ДОДАТОК А 
+Відеозапис 
+Відеозапис презентації результатів лабораторної роботи:
+https://youtu.be/gqhQp8q6VVQ
+Хронологічний опис відеозапису:
+0:00 — Вступ
+0:30 — Архітектурні й технологічні рішення
+1:50 — Взаємодія користувачів із системою
+2:46 — Структура взаємодії компонентів системи
+3:19 — Послідовність дій користувача та обробка запитів
+3:40 — Зміни станів
+5:40 — Висновки
+5:55 — Демонстрація
+________________
+ДОДАТОК Б 
+Діаграми
+  
+
+Рисунок Б.1 — Use Case Diagram
+  
+
+Рисунок Б.2 — Component Diagram
+  
+
+Рисунок Б.3 — Activity Diagram
+
+
+  
+
+Рисунок Б.4 — State Diagram 
+________________
+
+
+ДОДАТОК В 
+Програмний код 
+В.1 profile.html
+ 1 {% extends 'core/base.html' %}
+ 2 
+ 3 {% block title %}Профіль{% endblock %}
+ 4 
+ 5 {% block content %}
+ 6 <h2 class="text-white mb-4">👤 Особистий кабінет</h2>
+ 7 
+ 8 <div class="card mb-4">
+ 9     <div class="card-body">
+10         <h5 class="card-title">{{ user.get_full_name|default:user.username }}</h5>
+11         <p class="card-text text-muted">{{ user.email }}</p>
+12         <span class="badge bg-info">{{ user.role|default:"reader" }}</span>
+13     </div>
+14 </div>
+15 
+16 <h5 class="text-white mb-3">📌 Мої бронювання</h5>
+17 {% if reservations %}
+18     {% for res in reservations %}
+19     <div class="card mb-3 border-0 shadow-sm">
+20         <div class="card-body">
+21             <div class="d-flex justify-content-between align-items-center">
+22                 <div>
+23                     <h6 class="mb-1 fw-bold">{{ res.book.title }}</h6>
+24                     <p class="mb-1 text-muted small">Заброньовано: {{ res.reservation_date|date:"d.m.Y" }}</p>
+25                     <p class="mb-0 text-muted small">Дійсне до: {{ res.expiry_date|date:"d.m.Y" }}</p>
+26                 </div>
+27                 28                 <form method="post" action="{% url 'cancel_reservation' res.id %}">
+29                     {% csrf_token %}
+30                     <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Ви впевнені, що хочете скасувати бронювання?')">
+31                         <i class="bi bi-x-circle me-1"></i>Скасувати
+32                     </button>
+33                 </form>
+34             </div>
+35         </div>
+36     </div>
+37     {% endfor %}
+38 {% else %}
+39     <p class="text-white opacity-75">Немає активних бронювань</p>
+40 {% endif %}
+41 
+42 <h5 class="text-white mb-3 mt-4">📖 Мої позики</h5>
+43 {% if loans %}
+44     {% for loan in loans %}
+45     <div class="card mb-3">
+46         <div class="card-body">
+47             <h6>{{ loan.book.title }}</h6>
+48             <p class="mb-1 text-muted">Видано: {{ loan.issue_date|date:"d.m.Y" }}</p>
+49             <p class="mb-2 text-muted">Повернути до: {{ loan.due_date|date:"d.m.Y" }}</p>
+50         </div>
+51     </div>
+52     {% endfor %}
+53 {% else %}
+54     <p class="text-white">Немає активних позик</p>
+55 {% endif %}
+56 {% endblock %}
+
+
+В.2 views.py
+ 1 from django.db import models
+ 2 from django.contrib.auth.models import AbstractUser
+ 3 
+ 4 # === ENUMS (Вибір варіантів) ===
+ 5 class UserRole(models.TextChoices):
+ 6     READER = 'reader', 'Читач'
+ 7     LIBRARIAN = 'librarian', 'Бібліотекар'
+ 8     ADMIN = 'admin', 'Адмін'
+ 9 
+10 class BookStatus(models.TextChoices):
+11     AVAILABLE = 'available', 'Доступна'
+12     ISSUED = 'issued', 'Видана'
+13     RESERVED = 'reserved', 'Заброньована'
+14     WITHDRAWN = 'withdrawn', 'Списана'
+15 
+16 class BookCondition(models.TextChoices):
+17     NEW = 'new', 'Нова'
+18     GOOD = 'good', 'Хороша'
+19     FAIR = 'fair', 'Задовільна'
+20     POOR = 'poor', 'Погана'
+21 
+22 class ReservationStatus(models.TextChoices):
+23     ACTIVE = 'active', 'Активна'
+24     COMPLETED = 'completed', 'Завершена'
+25     CANCELLED = 'cancelled', 'Скасована'
+26     EXPIRED = 'expired', 'Протермінована'
+27 
+28 # === МОДЕЛІ ===
+29 
+30 # 1. Користувач (розширюємо стандартного Django User)
+31 class User(AbstractUser):
+32     phone = models.CharField(max_length=20, blank=True, null=True)
+33     role = models.CharField(
+34         max_length=20,
+35         choices=UserRole.choices,
+36         default=UserRole.READER
+37     )
+38 
+39     class Meta:
+40         db_table = 'users'
+41 
+42     def __str__(self):
+43         return self.email
+44 
+45 # 2. Книга
+46 class Book(models.Model):
+47     title = models.CharField(max_length=200)
+48     author = models.CharField(max_length=100)
+49     category = models.CharField(max_length=50, blank=True, null=True)
+50     isbn = models.CharField(max_length=20, unique=True, blank=True, null=True)
+51     condition = models.CharField(
+52         max_length=20, 
+53         choices=BookCondition.choices, 
+54         default=BookCondition.GOOD
+55     )
+56     status = models.CharField(
+57         max_length=20, 
+58         choices=BookStatus.choices, 
+59         default=BookStatus.AVAILABLE
+60     )
+61     location = models.CharField(max_length=100, blank=True, null=True)
+62     tags = models.CharField(max_length=200, blank=True, null=True)
+63 
+64     class Meta:
+65         db_table = 'books'
+66 
+67     def __str__(self):
+68         return f"{self.title} - {self.author}"
+69 
+70 # 3. Позика (Loan)
+71 class Loan(models.Model):
+72     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='loans')
+73     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='loans')
+74     issue_date = models.DateTimeField(auto_now_add=True)
+75     due_date = models.DateTimeField() # Термін повернення
+76     return_date = models.DateTimeField(blank=True, null=True)
+77 
+78     class Meta:
+79         db_table = 'loans'
+80 
+81 # 4. Бронювання (Reservation)
+82 class Reservation(models.Model):
+83     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reservations')
+84     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reservations')
+85     reservation_date = models.DateTimeField(auto_now_add=True)
+86     expiry_date = models.DateTimeField() # До коли діє бронь
+87     status = models.CharField(
+88         max_length=20, 
+89         choices=ReservationStatus.choices, 
+90         default=ReservationStatus.ACTIVE
+91     )
+92 
+93     class Meta:
+94         db_table = 'reservations'
+
+
+В.3 urls.py
+ 1 from django.contrib import admin
+ 2 from django.urls import path
+ 3 from core import views
+ 4 
+ 5 urlpatterns = [
+ 6     path('admin/', admin.site.urls),
+ 7     path('', views.catalog, name='catalog'),  # Головна
+ 8     path('reserve/<int:book_id>/', views.reserve_book, name='reserve_book'),  # Бронювання
+ 9     path('profile/', views.profile, name='profile'),
+10     path('login/', views.user_login, name='login'),
+11     path('logout/', views.user_logout, name='logout'),
+12     path('cancel/<int:reservation_id>/', views.cancel_reservation, name='cancel_reservation'),
+13 
+14     # Шляхи бібліотекаря
+15     path('librarian/', views.librarian_dashboard, name='librarian_dashboard'),
+16     path('librarian/issue/', views.issue_book, name='librarian_issue_book'),
+17     path('librarian/return/<int:loan_id>/', views.return_book, name='librarian_return_book'),
+18     path('librarian/books/', views.manage_books, name='manage_books'),
+19     path('librarian/issue-from-reservation/<int:reservation_id>/', 
+20          views.librarian_issue_from_reservation, 
+21          name='librarian_issue_from_reservation'),
+22     path('librarian/cancel-reservation/<int:reservation_id>/', 
+23          views.librarian_cancel_reservation, 
+24          name='librarian_cancel_reservation'),
+25 ]
+
+
+В.4 urls.py
+  1 from django.shortcuts import render, redirect, get_object_or_404
+  2 from django.contrib.auth import authenticate, login, logout
+  3 from django.contrib.auth.decorators import login_required
+  4 from django.contrib import messages
+  5 from django.db.models import Q
+  6 from core.models import Book, Reservation, Loan, User
+  7 from django.utils import timezone
+  8 from datetime import timedelta
+  9 
+ 10 from django.contrib.auth.decorators import login_required, user_passes_test
+ 11 from functools import wraps
+ 12 import datetime
+ 13 import datetime
+ 14 from django.contrib.auth.decorators import login_required, user_passes_test
+ 15 from functools import wraps
+ 16 from django.shortcuts import render, redirect, get_object_or_404
+ 17 from django.contrib import messages
+ 18 from core.models import User, Book, Loan, Reservation
+ 19 
+ 20 # === Декоратор для бібліотекаря ===
+ 21 def librarian_required(view_func):
+ 22     def _wrapped_view(request, *args, **kwargs):
+ 23         if request.user.is_authenticated and (request.user.role == 'librarian' or request.user.is_superuser):
+ 24             return view_func(request, *args, **kwargs)
+ 25         messages.error(request, "Доступ дозволено тільки бібліотекарям.")
+ 26         return redirect('catalog')
+ 27     return wraps(view_func)(_wrapped_view)
+ 28 
+ 29 @login_required
+ 30 @librarian_required
+ 31 def librarian_dashboard(request):
+ 32     # Статистика
+ 33     stats = {
+ 34         'total_books': Book.objects.count(),
+ 35         'active_loans': Loan.objects.filter(return_date__isnull=True).count(),
+ 36         'active_reservations': Reservation.objects.filter(status='active').count(),
+ 37         'total_readers': User.objects.filter(role='reader').count()
+ 38     }
+ 39 
+ 40     # Списки
+ 41     active_loans = Loan.objects.filter(return_date__isnull=True).select_related('user', 'book')[:10]
+ 42     active_reservations = Reservation.objects.filter(status='active').select_related('user', 'book')[:10]
+ 43     
+ 44     # Для форми видачі - всі читачі та доступні книги
+ 45     readers = User.objects.filter(role='reader').order_by('email')
+ 46     available_books = Book.objects.filter(status='available').order_by('title')
+ 47     
+ 48     context = {
+ 49         'stats': stats,
+ 50         'active_loans': active_loans,
+ 51         'active_reservations': active_reservations,
+ 52         'readers': readers,
+ 53         'available_books': available_books,
+ 54     }
+ 55     return render(request, 'core/librarian/dashboard.html', context)
+ 56 
+ 57 @login_required
+ 58 @librarian_required
+ 59 def librarian_issue_from_reservation(request, reservation_id):
+ 60     """Видати книгу з активного бронювання"""
+ 61     if request.method == 'POST':
+ 62         try:
+ 63             reservation = Reservation.objects.get(id=reservation_id, status='active')
+ 64             book = reservation.book
+ 65             user = reservation.user
+ 66             
+ 67             # Перевірка статусу книги
+ 68             if book.status == 'withdrawn':
+ 69                 messages.error(request, "Книга списана і не може бути видана.")
+ 70             elif book.status == 'issued':
+ 71                 messages.error(request, "Книга вже видана.")
+ 72             else:
+ 73                 # Створюємо позику (14 днів за замовчуванням)
+ 74                 Loan.objects.create(
+ 75                     user=user,
+ 76                     book=book,
+ 77                     due_date=datetime.datetime.now() + datetime.timedelta(days=14)
+ 78                 )
+ 79                 
+ 80                 # Змінюємо статус книги
+ 81                 book.status = 'issued'
+ 82                 book.save()
+ 83                 
+ 84                 # Завершуємо бронювання
+ 85                 reservation.status = 'completed'
+ 86                 reservation.save()
+ 87                 
+ 88                 messages.success(request, f"Книга '{book.title}' видана користувачу {user.email}.")
+ 89                 
+ 90         except Reservation.DoesNotExist:
+ 91             messages.error(request, "Бронювання не знайдено.")
+ 92             
+ 93     return redirect('librarian_dashboard')
+ 94 
+ 95 
+ 96 @login_required
+ 97 @librarian_required
+ 98 def librarian_cancel_reservation(request, reservation_id):
+ 99     """Скасувати бронювання"""
+100     if request.method == 'POST':
+101         try:
+102             reservation = Reservation.objects.get(id=reservation_id, status='active')
+103             book = reservation.book
+104             
+105             # Скасовуємо бронювання
+106             reservation.status = 'cancelled'
+107             reservation.save()
+108             
+109             # Перевіряємо, чи є інші активні бронювання на цю книгу
+110             if not Reservation.objects.filter(book=book, status='active').exists():
+111                 book.status = 'available'
+112                 book.save()
+113             
+114             messages.success(request, f"Бронювання книги '{book.title}' скасовано.")
+115             
+116         except Reservation.DoesNotExist:
+117             messages.error(request, "Бронювання не знайдено.")
+118             
+119     return redirect('librarian_dashboard')
+120 
+121 # === CRUD: Управління книгами ===
+122 @login_required
+123 @librarian_required
+124 def manage_books(request):
+125 # --- СОРТУВАННЯ ---
+126     order = request.GET.get('order', 'id')
+127     direction = request.GET.get('dir', 'asc')
+128 
+129     allowed = ['id', 'title', 'author', 'category', 'status']
+130 
+131     if order not in allowed:
+132         order = 'id'
+133 
+134     if direction == 'desc':
+135         order = f'-{order}'
+136 
+137     books = Book.objects.all().order_by(order)
+138     
+139     if request.method == 'POST':
+140         action = request.POST.get('action')
+141         
+142         if action == 'add':
+143             # Додавання нової книги
+144             Book.objects.create(
+145                 title=request.POST.get('title'),
+146                 author=request.POST.get('author'),
+147                 category=request.POST.get('category'),
+148                 status='available'
+149             )
+150             messages.success(request, "Книгу додано!")
+151             
+152         elif action == 'edit':
+153             book_id = request.POST.get('book_id')
+154             book = get_object_or_404(Book, id=book_id)
+155             book.title = request.POST.get('title')
+156             book.author = request.POST.get('author')
+157             book.category = request.POST.get('category')
+158             book.status = request.POST.get('status')
+159             book.save()
+160             messages.success(request, "Книгу оновлено!")
+161             
+162         elif action == 'delete':
+163             book_id = request.POST.get('book_id')
+164             book = get_object_or_404(Book, id=book_id)
+165             if book.status == 'withdrawn':
+166                 book.delete()
+167                 messages.success(request, "Книгу видалено.")
+168             else:
+169                 messages.error(request, "Можна видаляти лише списані книги.")
+170 
+171     return render(request, 'core/librarian/books.html', {'books': books})
+172 
+173 # === Функція видачі книги (Створення позики) ===
+174 @login_required
+175 @librarian_required
+176 def issue_book(request):
+177     if request.method == 'POST':
+178         try:
+179             user_id = int(request.POST.get('user_id'))
+180             book_id = int(request.POST.get('book_id'))
+181             days = int(request.POST.get('days', 14))
+182             
+183             user = User.objects.get(id=user_id)
+184             book = Book.objects.get(id=book_id)
+185             
+186             # 1. Перевірки статусу книги
+187             if book.status == 'withdrawn':
+188                 messages.error(request, "Книга списана.")
+189             elif book.status == 'issued':
+190                 messages.error(request, "Книга вже видана.")
+191             else:
+192                 # 2. Перевірка бронювання
+193                 active_res = Reservation.objects.filter(
+194                     book=book,
+195                     expiry_date__gt=datetime.datetime.now(),
+196                     status='active'
+197                 ).first()
+198                 
+199                 if active_res and active_res.user != user:
+200                     messages.error(request, f"Книга заброньована користувачем {active_res.user.email}.")
+201                 else:
+202                     # Якщо броня цього ж юзера - завершуємо її
+203                     if active_res and active_res.user == user:
+204                         active_res.status = 'completed'
+205                         active_res.save()
+206                     
+207                     # 3. Створення позики
+208                     Loan.objects.create(
+209                         user=user,
+210                         book=book,
+211                         due_date=datetime.datetime.now() + datetime.timedelta(days=days)
+212                     )
+213                     book.status = 'issued'
+214                     book.save()
+215                     messages.success(request, f"Книга '{book.title}' видана користувачу {user.email}.")
+216                     
+217         except User.DoesNotExist:
+218             messages.error(request, "Користувача не знайдено.")
+219         except Book.DoesNotExist:
+220             messages.error(request, "Книгу не знайдено.")
+221             
+222     return redirect('librarian_dashboard')
+223 
+224 # === Функція повернення книги ===
+225 @login_required
+226 @librarian_required
+227 def return_book(request, loan_id):
+228     if request.method == 'POST':
+229         try:
+230             loan = Loan.objects.get(id=loan_id)
+231             if loan.return_date:
+232                 messages.error(request, "Книга вже повернута.")
+233             else:
+234                 loan.return_date = datetime.datetime.now()
+235                 loan.save()
+236                 
+237                 book = loan.book
+238                 
+239                 # Перевірка черги (наступне бронювання)
+240                 next_res = Reservation.objects.filter(
+241                     book=book,
+242                     expiry_date__gt=datetime.datetime.now(),
+243                     status='active'
+244                 ).order_by('reservation_date').first()
+245                 
+246                 if next_res:
+247                     book.status = 'reserved'
+248                 else:
+249                     book.status = 'available'
+250                 book.save()
+251                 
+252                 messages.success(request, f"Книга '{book.title}' повернута.")
+253         except Loan.DoesNotExist:
+254             messages.error(request, "Позику не знайдено.")
+255             
+256     return redirect('librarian_dashboard')
+257 
+258 @login_required(login_url='/login/')
+259 def catalog(request):
+260     """Головна сторінка - каталог книг"""
+261     query = request.GET.get('q', '')
+262     
+263     if query:
+264         books = Book.objects.filter(
+265             Q(title__icontains=query) | 
+266             Q(author__icontains=query) |
+267             Q(tags__icontains=query)
+268         )
+269     else:
+270         books = Book.objects.all()
+271     
+272     return render(request, 'core/catalog.html', {'books': books, 'query': query})
+273 
+274 @login_required
+275 def reserve_book(request, book_id):
+276     """Забронювати книгу"""
+277     if request.method == 'POST':
+278         # ✅ Шукаємо книгу по id (не book_id!)
+279         book = get_object_or_404(Book, id=book_id)
+280         
+281         if book.status == 'available':
+282             # Створюємо бронювання
+283             Reservation.objects.create(
+284                 user=request.user,
+285                 book=book,
+286                 expiry_date=timezone.now() + timedelta(days=7)
+287             )
+288             # Змінюємо статус книги
+289             book.status = 'reserved'
+290             book.save()
+291             
+292             messages.success(request, f'Книга "{book.title}" заброньована!')
+293         else:
+294             messages.error(request, 'Книга недоступна для бронювання')
+295     
+296     return redirect('catalog')
+297 
+298 @login_required
+299 def cancel_reservation(request, reservation_id):
+300     if request.method == 'POST':
+301         try:
+302             reservation = Reservation.objects.get(id=reservation_id, user=request.user, status='active')
+305             book = reservation.book
+306             
+308             reservation.status = 'cancelled'
+309             reservation.save()
+310             
+313             if book.status == 'reserved':
+314                 if not Reservation.objects.filter(book=book, status='active').exists():
+315                     book.status = 'available'
+316                     book.save()
+317                     
+318             messages.success(request, f'Бронювання книги "{book.title}" скасовано.')
+319         except Reservation.DoesNotExist:
+320             messages.error(request, 'Бронювання не знайдено або вже скасовано.')
+321             
+322     return redirect('profile')
+323 
+324 @login_required
+325 def profile(request):
+327     reservations = Reservation.objects.filter(user=request.user, status='active')
+328     loans = Loan.objects.filter(user=request.user, return_date__isnull=True)
+329     
+330     return render(request, 'core/profile.html', {
+331         'reservations': reservations,
+332         'loans': loans
+333     })
+334 
+335 def user_login(request):  
+338     if request.method == 'POST':
+339         email = request.POST.get('email', '').lower().strip()
+340         password = request.POST.get('password', '')
+341         
+342         if email and password:
+343             try:
+344                 user_obj = User.objects.get(email=email)
+345                 user = authenticate(request, username=user_obj.username, password=password)
+346                 
+347                 if user is not None:
+348                     login(request, user)
+349 
+351                     if user.role == 'librarian' or user.is_superuser:
+352                         return redirect('librarian_dashboard')
+353 
+354                     return redirect('catalog')
+355 
+356             except User.DoesNotExist:
+357                 pass
+358         
+359         return render(request, 'core/login.html', {
+360             'error': 'Невірний email або пароль'
+361         })
+362     
+363     return render(request, 'core/login.html')
+364 
+365 def user_logout(request):
+366     logout(request)
+367     return redirect('login')
