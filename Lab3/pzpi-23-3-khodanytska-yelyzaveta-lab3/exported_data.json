@@ -1,0 +1,362 @@
+{
+  "users": [
+    {
+      "user_id": 1,
+      "name": "Єва",
+      "email": "eva@example.com",
+      "password_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+      "phone": null,
+      "role": "READER"
+    },
+    {
+      "user_id": 2,
+      "name": "Lisa",
+      "email": "admin@example.com",
+      "password_hash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+      "phone": "+3801234568",
+      "role": "READER"
+    },
+    {
+      "user_id": 3,
+      "name": "Читач Тест",
+      "email": "reader@test.com",
+      "password_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+      "phone": null,
+      "role": "LIBRARIAN"
+    },
+    {
+      "user_id": 4,
+      "name": "Бібліотекар Тест",
+      "email": "lib@test.com",
+      "password_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+      "phone": null,
+      "role": "LIBRARIAN"
+    },
+    {
+      "user_id": 5,
+      "name": "John Stewart",
+      "email": "john.stew@test.com",
+      "password_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+      "phone": null,
+      "role": "LIBRARIAN"
+    },
+    {
+      "user_id": 6,
+      "name": "Update user",
+      "email": "li.li@test.com",
+      "password_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+      "phone": "+12345678",
+      "role": "ADMIN"
+    },
+    {
+      "user_id": 7,
+      "name": "Pupu Pupu",
+      "email": "pu.pu@test.com",
+      "password_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+      "phone": null,
+      "role": "READER"
+    },
+    {
+      "user_id": 8,
+      "name": "Reader forIot",
+      "email": "reader.iot@test.com",
+      "password_hash": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
+      "phone": null,
+      "role": "READER"
+    },
+    {
+      "user_id": 9,
+      "name": "Adm",
+      "email": "admin1@test.com",
+      "password_hash": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
+      "phone": null,
+      "role": "ADMIN"
+    },
+    {
+      "user_id": 10,
+      "name": "Lib",
+      "email": "library1@test.com",
+      "password_hash": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
+      "phone": null,
+      "role": "LIBRARIAN"
+    },
+    {
+      "user_id": 11,
+      "name": "Read",
+      "email": "reader1@test.com",
+      "password_hash": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
+      "phone": null,
+      "role": "READER"
+    }
+  ],
+  "books": [
+    {
+      "book_id": 1,
+      "title": "Кобзар",
+      "author": "Тарас Шевченко",
+      "category": "Поезія",
+      "isbn": "978-617-123-456-7",
+      "condition": "GOOD",
+      "status": "AVAILABLE",
+      "location": "вул. Ярослава Мудрого, 17А",
+      "tags": "українська література, класика"
+    },
+    {
+      "book_id": 2,
+      "title": "1984",
+      "author": "Джордж Орвелл",
+      "category": "Антиутопія",
+      "isbn": "1234567890",
+      "condition": "GOOD",
+      "status": "AVAILABLE",
+      "location": "вул. Ярослава Мудрого, 17А",
+      "tags": null
+    },
+    {
+      "book_id": 3,
+      "title": "Полонений принц",
+      "author": "К С Пакат",
+      "category": "Роман",
+      "isbn": "0987654321",
+      "condition": "GOOD",
+      "status": "AVAILABLE",
+      "location": "вул. Олександра Олеся, 17А",
+      "tags": null
+    },
+    {
+      "book_id": 4,
+      "title": "Test Book",
+      "author": "Iot TTT",
+      "category": "Novel",
+      "isbn": "568908543",
+      "condition": "GOOD",
+      "status": "AVAILABLE",
+      "location": "Lalala street, 18",
+      "tags": "test, iot, test"
+    },
+    {
+      "book_id": 5,
+      "title": "Test",
+      "author": "Iot",
+      "category": "Novel",
+      "isbn": "92374983",
+      "condition": "GOOD",
+      "status": "AVAILABLE",
+      "location": "Lalala street, 18",
+      "tags": "test, test"
+    },
+    {
+      "book_id": 6,
+      "title": "Test123",
+      "author": "Iot123",
+      "category": "Novel",
+      "isbn": "927398237",
+      "condition": "GOOD",
+      "status": "AVAILABLE",
+      "location": "Lalala street, 18",
+      "tags": "test, test1"
+    },
+    {
+      "book_id": 7,
+      "title": "Test5678",
+      "author": "лоіивло",
+      "category": "Novel",
+      "isbn": "72981637",
+      "condition": "GOOD",
+      "status": "ISSUED",
+      "location": "Lalala street, 18",
+      "tags": "test, test1"
+    },
+    {
+      "book_id": 8,
+      "title": "2986498236",
+      "author": "лоіивло",
+      "category": "Novel",
+      "isbn": "10240124801",
+      "condition": "GOOD",
+      "status": "ISSUED",
+      "location": "Lalala street, 18",
+      "tags": "test, test1"
+    },
+    {
+      "book_id": 9,
+      "title": "TESTIK",
+      "author": "TEST",
+      "category": "Novel",
+      "isbn": "43297498",
+      "condition": "GOOD",
+      "status": "AVAILABLE",
+      "location": "Lalala street, 18",
+      "tags": "test, test2"
+    },
+    {
+      "book_id": 10,
+      "title": "TestBook",
+      "author": "Lalalal",
+      "category": "Novel",
+      "isbn": "23947278",
+      "condition": "GOOD",
+      "status": "ISSUED",
+      "location": "Lalala street, 18",
+      "tags": "test, test2"
+    },
+    {
+      "book_id": 11,
+      "title": "TestIotik",
+      "author": "Iot",
+      "category": "Novel",
+      "isbn": "3825389669",
+      "condition": "GOOD",
+      "status": "AVAILABLE",
+      "location": "Lalala street, 18",
+      "tags": "test, test34546"
+    }
+  ],
+  "loans": [
+    {
+      "loan_id": 1,
+      "user_id": 1,
+      "book_id": 1,
+      "issue_date": "2025-12-02 17:11:55.233355",
+      "due_date": "2025-12-16 17:11:55.223808",
+      "return_date": "2025-12-02 17:12:09.492086",
+      "book_title": "Кобзар",
+      "book_author": "Тарас Шевченко",
+      "book_isbn": "978-617-123-456-7"
+    },
+    {
+      "loan_id": 2,
+      "user_id": 2,
+      "book_id": 2,
+      "issue_date": "2025-12-03 13:56:13.497582",
+      "due_date": "2025-12-17 13:56:13.491609",
+      "return_date": "2025-12-03 13:56:29.541110",
+      "book_title": "1984",
+      "book_author": "Джордж Орвелл",
+      "book_isbn": "1234567890"
+    },
+    {
+      "loan_id": 3,
+      "user_id": 2,
+      "book_id": 1,
+      "issue_date": "2025-12-04 16:34:55.341287",
+      "due_date": "2025-12-25 16:34:55.336051",
+      "return_date": "2025-12-04 16:35:32.285820",
+      "book_title": "Кобзар",
+      "book_author": "Тарас Шевченко",
+      "book_isbn": "978-617-123-456-7"
+    },
+    {
+      "loan_id": 4,
+      "user_id": 8,
+      "book_id": 4,
+      "issue_date": "2025-12-14 15:33:01.865069",
+      "due_date": "2025-12-28 15:33:01.860104",
+      "return_date": "2025-12-14 15:33:23.125550",
+      "book_title": "Test Book",
+      "book_author": "Iot TTT",
+      "book_isbn": "568908543"
+    },
+    {
+      "loan_id": 5,
+      "user_id": 8,
+      "book_id": 1,
+      "issue_date": "2025-12-15 16:11:44.759237",
+      "due_date": "2025-12-29 16:11:44.759237",
+      "return_date": "2025-12-15 17:03:18.941942",
+      "book_title": "Кобзар",
+      "book_author": "Тарас Шевченко",
+      "book_isbn": "978-617-123-456-7"
+    },
+    {
+      "loan_id": 6,
+      "user_id": 3,
+      "book_id": 7,
+      "issue_date": "2025-12-15 18:22:38.570952",
+      "due_date": "2025-12-29 18:22:38.567950",
+      "return_date": null,
+      "book_title": "Test5678",
+      "book_author": "лоіивло",
+      "book_isbn": "72981637"
+    },
+    {
+      "loan_id": 7,
+      "user_id": 1,
+      "book_id": 8,
+      "issue_date": "2025-12-15 18:26:25.763246",
+      "due_date": "2025-12-29 18:26:25.763246",
+      "return_date": null,
+      "book_title": "2986498236",
+      "book_author": "лоіивло",
+      "book_isbn": "10240124801"
+    },
+    {
+      "loan_id": 8,
+      "user_id": 7,
+      "book_id": 3,
+      "issue_date": "2025-12-16 16:35:12.213084",
+      "due_date": "2025-12-30 16:35:12.206527",
+      "return_date": "2025-12-16 16:35:20.555119",
+      "book_title": "Полонений принц",
+      "book_author": "К С Пакат",
+      "book_isbn": "0987654321"
+    },
+    {
+      "loan_id": 9,
+      "user_id": 2,
+      "book_id": 10,
+      "issue_date": "2025-12-16 16:54:11.853415",
+      "due_date": "2025-12-30 16:54:11.849297",
+      "return_date": null,
+      "book_title": "TestBook",
+      "book_author": "Lalalal",
+      "book_isbn": "23947278"
+    }
+  ],
+  "reservations": [
+    {
+      "reservation_id": 1,
+      "user_id": 8,
+      "book_id": 2,
+      "reservation_date": "2026-04-21 21:12:11.380079",
+      "expiry_date": "2026-04-28 21:12:11.367709",
+      "status": "CANCELLED",
+      "book_title": "1984",
+      "book_author": "Джордж Орвелл",
+      "book_isbn": "1234567890"
+    },
+    {
+      "reservation_id": 2,
+      "user_id": 8,
+      "book_id": 2,
+      "reservation_date": "2026-04-21 21:15:26.133888",
+      "expiry_date": "2026-04-28 21:15:26.121858",
+      "status": "CANCELLED",
+      "book_title": "1984",
+      "book_author": "Джордж Орвелл",
+      "book_isbn": "1234567890"
+    },
+    {
+      "reservation_id": 3,
+      "user_id": 8,
+      "book_id": 1,
+      "reservation_date": "2026-04-21 21:15:37.803311",
+      "expiry_date": "2026-04-28 21:15:37.799360",
+      "status": "CANCELLED",
+      "book_title": "Кобзар",
+      "book_author": "Тарас Шевченко",
+      "book_isbn": "978-617-123-456-7"
+    },
+    {
+      "reservation_id": 4,
+      "user_id": 8,
+      "book_id": 2,
+      "reservation_date": "2026-04-21 21:39:44.385531",
+      "expiry_date": "2026-04-28 21:39:44.371616",
+      "status": "CANCELLED",
+      "book_title": "1984",
+      "book_author": "Джордж Орвелл",
+      "book_isbn": "1234567890"
+    }
+  ]
+}

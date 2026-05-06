@@ -1,0 +1,77 @@
+### Створити нового користувача
+POST http://localhost:5000/admin/users/
+Content-Type: application/json
+
+{
+  "name": "Read",
+  "email": "reader1@test.com",
+  "password": "12345",
+  "role": "READER"
+}
+
+### Додати нову книгу до каталогу
+POST http://localhost:5000/librarian/books/
+Content-Type: application/json
+
+{
+  "title": "TestIotik",
+  "author": "Iot",
+  "isbn": "3825389669",
+  "category": "Novel",
+  "location": "Lalala street, 18",
+  "tags": "test, test34546"
+}
+
+### Створення бронювання книги
+POST http://localhost:5000/reservations/
+Content-Type: application/json
+
+{
+  "user_id": 4,
+  "book_id": 11
+}
+
+### Отримати OTP для резервування
+GET http://localhost:5000/iot/reservations/14/otp
+
+### Розблокувати комірку за OTP (імітація IoT-пристрою)
+POST http://localhost:5000/iot/lockers/unlock
+Content-Type: application/json
+
+{
+  "otp": ""
+}
+
+### Підтвердити видачу книги (IoT-пристрій після отримання книги)
+POST http://localhost:5000/iot/lockers/confirm_pickup
+Content-Type: application/json
+
+{
+  "user_id": 7,
+  "book_id": 9
+}
+
+### Перевірити активні позики читача
+GET http://localhost:5000/users/5/loans/active
+
+### Повернути книгу через поштомат (IoT-ендпоінт)
+POST http://localhost:5000/iot/loans/return_by_book
+Content-Type: application/json
+
+{
+  "book_id": 10
+}
+
+### Перевірити, що позика закрита
+GET http://localhost:5000/users/7/loans
+
+### Змінити статус
+PUT http://localhost:5000/librarian/books/9
+Content-Type: application/json
+
+{
+  "status": "withdrawn"
+}
+
+### Видалити книгу (доступно тільки якщо status = withdrawn)
+DELETE http://localhost:5000/librarian/books/9

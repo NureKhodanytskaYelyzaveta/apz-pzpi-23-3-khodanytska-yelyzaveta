@@ -1,0 +1,222 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<style>
+.custom-table-card {
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.custom-table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.custom-table thead {
+    background: #f8fafc;
+}
+
+.custom-table th {
+    font-size: 13px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.custom-table td {
+    padding: 14px;
+}
+
+.custom-table tbody tr {
+    transition: 0.2s;
+}
+
+.custom-table tbody tr:hover {
+    background: #f3f4f6;
+}
+
+/* округлення таблиці */
+.custom-table thead tr th:first-child {
+    border-top-left-radius: 20px;
+}
+
+.custom-table thead tr th:last-child {
+    border-top-right-radius: 20px;
+}
+
+.custom-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 20px;
+}
+
+.custom-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 20px;
+}
+    
+.table th a {
+    text-decoration: none;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.table th a:hover {
+    color: #667eea;
+}
+
+.table tbody tr {
+    transition: 0.2s;
+}
+
+.table tbody tr:hover {
+    background: #f9fafb;
+    transform: scale(1.002);
+}
+
+.card {
+    border-radius: 16px;
+}
+
+.card-header {
+    border-radius: 16px 16px 0 0 !important;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+}
+
+.badge {
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white fw-bold">
+        <i class="bi bi-book me-2"></i>Каталог (CRUD)
+    </h2>
+    <a href="{% url 'librarian_dashboard' %}" class="btn btn-light rounded-pill">
+        <i class="bi bi-arrow-left"></i> Назад
+    </a>
+</div>
+
+<!-- Форма -->
+<div class="card shadow border-0 mb-4">
+    <div class="card-body">
+        <form method="post" class="row g-2 align-items-center">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
+
+            <div class="col-md-3">
+                <input type="text" name="title" class="form-control rounded-pill" placeholder="Назва" required>
+            </div>
+
+            <div class="col-md-3">
+                <input type="text" name="author" class="form-control rounded-pill" placeholder="Автор" required>
+            </div>
+
+            <div class="col-md-3">
+                <input type="text" name="category" class="form-control rounded-pill" placeholder="Категорія">
+            </div>
+
+            <div class="col-md-3 d-grid">
+                <button class="btn btn-primary rounded-pill">
+                    <i class="bi bi-plus-lg me-1"></i> Додати
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card custom-table-card shadow border-0 mt-4">
+    <div class="card-body p-0">
+        <table class="table mb-0 align-middle custom-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Назва</th>
+                    <th>Автор</th>
+                    <th>Категорія</th>
+                    <th>Статус</th>
+                    <th class="text-end">Дії</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td class="text-muted small">{{ book.id }}</td>
+
+                    <td class="fw-semibold">{{ book.title }}</td>
+
+                    <td class="text-muted">{{ book.author }}</td>
+
+                    <td>
+                        <span class="badge bg-light text-dark px-3 py-2">
+                            {{ book.category|default:"-" }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {% if book.status == 'available' %}
+                            <span class="badge bg-success px-3 py-2">Доступна</span>
+                        {% elif book.status == 'issued' %}
+                            <span class="badge bg-danger px-3 py-2">Видана</span>
+                        {% elif book.status == 'reserved' %}
+                            <span class="badge bg-warning text-dark px-3 py-2">Заброньована</span>
+                        {% else %}
+                            <span class="badge bg-secondary px-3 py-2">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary rounded-circle"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#editForm{{ book.id }}">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- EDIT -->
+                <tr id="editForm{{ book.id }}" class="collapse">
+                    <td colspan="6" class="bg-light p-3">
+                        <form method="post" class="row g-2">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="edit">
+                            <input type="hidden" name="book_id" value="{{ book.id }}">
+
+                            <div class="col-md-3">
+                                <input type="text" name="title" class="form-control form-control-sm" value="{{ book.title }}">
+                            </div>
+
+                            <div class="col-md-2">
+                                <input type="text" name="author" class="form-control form-control-sm" value="{{ book.author }}">
+                            </div>
+
+                            <div class="col-md-2">
+                                <input type="text" name="category" class="form-control form-control-sm" value="{{ book.category }}">
+                            </div>
+
+                            <div class="col-md-2">
+                                <select name="status" class="form-select form-select-sm">
+                                    <option value="available" {% if book.status == 'available' %}selected{% endif %}>Доступна</option>
+                                    <option value="issued" {% if book.status == 'issued' %}selected{% endif %}>Видана</option>
+                                    <option value="reserved" {% if book.status == 'reserved' %}selected{% endif %}>Заброньована</option>
+                                    <option value="withdrawn" {% if book.status == 'withdrawn' %}selected{% endif %}>Списана</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-1">
+                                <button class="btn btn-success btn-sm">Зберегти</button>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

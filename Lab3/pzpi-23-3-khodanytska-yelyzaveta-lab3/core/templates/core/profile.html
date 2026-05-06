@@ -1,0 +1,56 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Профіль{% endblock %}
+
+{% block content %}
+<h2 class="text-white mb-4">👤 Особистий кабінет</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">{{ user.get_full_name|default:user.username }}</h5>
+        <p class="card-text text-muted">{{ user.email }}</p>
+        <span class="badge bg-info">{{ user.role|default:"reader" }}</span>
+    </div>
+</div>
+
+<h5 class="text-white mb-3">📌 Мої бронювання</h5>
+{% if reservations %}
+    {% for res in reservations %}
+    <div class="card mb-3 border-0 shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1 fw-bold">{{ res.book.title }}</h6>
+                    <p class="mb-1 text-muted small">Заброньовано: {{ res.reservation_date|date:"d.m.Y" }}</p>
+                    <p class="mb-0 text-muted small">Дійсне до: {{ res.expiry_date|date:"d.m.Y" }}</p>
+                </div>
+                <!-- Форма скасування -->
+                <form method="post" action="{% url 'cancel_reservation' res.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Ви впевнені, що хочете скасувати бронювання?')">
+                        <i class="bi bi-x-circle me-1"></i>Скасувати
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <p class="text-white opacity-75">Немає активних бронювань</p>
+{% endif %}
+
+<h5 class="text-white mb-3 mt-4">📖 Мої позики</h5>
+{% if loans %}
+    {% for loan in loans %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h6>{{ loan.book.title }}</h6>
+            <p class="mb-1 text-muted">Видано: {{ loan.issue_date|date:"d.m.Y" }}</p>
+            <p class="mb-2 text-muted">Повернути до: {{ loan.due_date|date:"d.m.Y" }}</p>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <p class="text-white">Немає активних позик</p>
+{% endif %}
+{% endblock %}

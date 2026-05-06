@@ -1,0 +1,336 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Панель бібліотекаря{% endblock %}
+
+{% block extra_css %}
+<style>
+.stat-card {
+    border-radius: 18px;
+    transition: all 0.25s ease;
+}
+.stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.card {
+    border-radius: 18px;
+}
+
+.card-header {
+    border-radius: 18px 18px 0 0 !important;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+}
+
+.table {
+    margin: 0;
+}
+
+.table thead {
+    background: #f8fafc;
+}
+
+.table th {
+    font-size: 13px;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+.table td {
+    padding: 14px;
+}
+
+.table tbody tr {
+    transition: 0.2s;
+}
+
+.table tbody tr:hover {
+    background: #f3f4f6;
+}
+
+.card.shadow-sm {
+    overflow: hidden;
+}
+
+/* округлення таблиці */
+.table thead tr th:first-child {
+    border-top-left-radius: 18px;
+}
+.table thead tr th:last-child {
+    border-top-right-radius: 18px;
+}
+.table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 18px;
+}
+.table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 18px;
+}
+
+/* input стиль */
+.form-control, .form-select {
+    border-radius: 12px;
+}
+
+.search-results {
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+    border-radius: 12px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white fw-bold">
+        <i class="bi bi-shield-lock-fill me-2"></i>Панель Бібліотекаря
+    </h2>
+    <a href="{% url 'manage_books' %}" class="btn btn-light fw-bold">
+        <i class="bi bi-tools me-2"></i>Керування книгами
+    </a>
+</div>
+
+<!-- Статистика -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm border-0 h-100 text-center p-4 bg-white">
+            <div class="text-primary mb-2"><i class="bi bi-book" style="font-size: 2.5rem;"></i></div>
+            <h3 class="text-primary fw-bold mb-1">{{ stats.total_books }}</h3>
+            <small class="text-muted">Всього книг</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm border-0 h-100 text-center p-4 bg-white">
+            <div class="text-warning mb-2"><i class="bi bi-clock-history" style="font-size: 2.5rem;"></i></div>
+            <h3 class="text-warning fw-bold mb-1">{{ stats.active_loans }}</h3>
+            <small class="text-muted">Активних позик</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm border-0 h-100 text-center p-4 bg-white">
+            <div class="text-info mb-2"><i class="bi bi-bookmark" style="font-size: 2.5rem;"></i></div>
+            <h3 class="text-info fw-bold mb-1">{{ stats.active_reservations }}</h3>
+            <small class="text-muted">Бронювань</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm border-0 h-100 text-center p-4 bg-white">
+            <div class="text-success mb-2"><i class="bi bi-people" style="font-size: 2.5rem;"></i></div>
+            <h3 class="text-success fw-bold mb-1">{{ stats.total_readers }}</h3>
+            <small class="text-muted">Читачів</small>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Форма видачі -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white fw-bold py-3">
+                <i class="bi bi-book-check me-2 text-primary"></i>Видача книги
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'librarian_issue_book' %}">
+                    {% csrf_token %}
+                    
+                    <!-- Пошук користувача -->
+                    <div class="mb-3 position-relative">
+                        <label class="form-label fw-bold"><i class="bi bi-person me-1"></i>Читач</label>
+                        <input type="text" id="userSearch" class="form-control" placeholder="🔍 Введіть email..." autocomplete="off">
+                        <div id="userResults" class="list-group mt-2 search-results" style="display: none;"></div>
+                        <input type="hidden" name="user_id" id="selectedUserId" required>
+                        <small class="text-muted" id="selectedUserName"></small>
+                    </div>
+
+                    <!-- Пошук книги -->
+                    <div class="mb-3 position-relative">
+                        <label class="form-label fw-bold"><i class="bi bi-book me-1"></i>Книга</label>
+                        <input type="text" id="bookSearch" class="form-control" placeholder="🔍 Введіть назву..." autocomplete="off">
+                        <div id="bookResults" class="list-group mt-2 search-results" style="display: none;"></div>
+                        <input type="hidden" name="book_id" id="selectedBookId" required>
+                        <small class="text-muted" id="selectedBookName"></small>
+                    </div>
+
+                    <!-- Термін -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold"><i class="bi bi-calendar-check me-1"></i>Термін видачі</label>
+                        <select name="days" class="form-select">
+                            <option value="7">7 днів</option>
+                            <option value="14" selected>14 днів</option>
+                            <option value="21">21 день</option>
+                            <option value="30">30 днів</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                        <i class="bi bi-check-circle me-2"></i>Видати книгу
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Активні позики -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-clock-history me-2 text-warning"></i>Активні позики</span>
+                <span class="badge bg-primary rounded-pill">{{ active_loans.count }}</span>
+            </div>
+            <div class="card-body p-0">
+                {% if active_loans %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">📖 Книга</th>
+                                <th>👤 Читач</th>
+                                <th>📅 Повернути до</th>
+                                <th class="text-end pe-3">Дії</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in active_loans %}
+                            <tr>
+                                <td class="ps-3">
+                                    <div class="fw-bold text-primary">{{ loan.book.title }}</div>
+                                    <small class="text-muted">{{ loan.book.author }}</small>
+                                </td>
+                                <td>
+                                    <div>{{ loan.user.email }}</div>
+                                    <small class="text-muted">{{ loan.user.first_name|default:loan.user.username|default:"Без імені" }}</small>
+                                </td>
+                                <td>
+                                    <small class="{% if loan.due_date|date:'Y-m-d' < now|date:'Y-m-d' %}text-danger fw-bold{% endif %}">
+                                        {{ loan.due_date|date:"d.m.Y" }}
+                                    </small>
+                                </td>
+                                <td class="text-end pe-3">
+                                    <form method="post" action="{% url 'librarian_return_book' loan.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Повернути книгу «{{ loan.book.title }}»?')">
+                                            <i class="bi bi-check-circle me-1"></i>Повернути
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                    <p class="mt-2 mb-0">Немає активних позик</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Активні бронювання з кнопками дій -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-bookmark me-2 text-info"></i>Активні бронювання</span>
+                <span class="badge bg-info rounded-pill">{{ active_reservations.count }}</span>
+            </div>
+            <div class="card-body p-0">
+                {% if active_reservations %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">📖 Книга</th>
+                                <th>👤 Читач</th>
+                                <th>📅 Заброньовано</th>
+                                <th>⏰ Дійсне до</th>
+                                <th class="text-end pe-3">Дії</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for res in active_reservations %}
+                            <tr>
+                                <td class="ps-3">
+                                    <div class="fw-bold">{{ res.book.title }}</div>
+                                    <small class="text-muted">{{ res.book.author }}</small>
+                                </td>
+                                <td>
+                                    <div>{{ res.user.email }}</div>
+                                    <small class="text-muted">{{ res.user.first_name|default:res.user.username|default:"Без імені" }}</small>
+                                </td>
+                                <td>{{ res.reservation_date|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    <small class="{% if res.expiry_date|date:'Y-m-d' < now|date:'Y-m-d' %}text-danger fw-bold{% else %}text-muted{% endif %}">
+                                        {{ res.expiry_date|date:"d.m.Y" }}
+                                    </small>
+                                </td>
+                                <td class="text-end pe-3">
+                                    <!-- Кнопка "Видати книгу" -->
+                                    <form method="post" action="{% url 'librarian_issue_from_reservation' res.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-success" title="Видати книгу" onclick="return confirm('Видати книгу «{{ res.book.title }}» користувачу {{ res.user.email }}?')">
+                                            <i class="bi bi-check-circle me-1"></i>Видати
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Кнопка "Скасувати бронювання" -->
+                                    <form method="post" action="{% url 'librarian_cancel_reservation' res.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Скасувати бронювання" onclick="return confirm('Скасувати бронювання на книгу «{{ res.book.title }}»?')">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-inbox" style="font-size: 2.5rem;"></i>
+                    <p class="mt-2 mb-0">Немає активних бронювань</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const readersData = [{% for r in readers|default:"[]" %}{id:{{r.id}},email:"{{r.email}}",name:"{{r.first_name|default:r.username}}"},{% endfor %}];
+const booksData = [{% for b in available_books|default:"[]" %}{id:{{b.id}},title:"{{b.title}}",author:"{{b.author}}"},{% endfor %}];
+
+document.getElementById('userSearch').addEventListener('input', function(e){
+    const q=e.target.value.toLowerCase(),res=document.getElementById('userResults');
+    if(q.length<1){res.style.display='none';return;}
+    const f=readersData.filter(r=>r.email.toLowerCase().includes(q)||r.name.toLowerCase().includes(q));
+    if(f.length>0){res.innerHTML=f.map(r=>`<button type="button" class="list-group-item list-group-item-action" onclick="selectUser(${r.id},'${r.email}')"><strong>${r.email}</strong><br><small class="text-muted">${r.name}</small></button>`).join('');res.style.display='block';}
+    else{res.style.display='none';}
+});
+
+document.getElementById('bookSearch').addEventListener('input', function(e){
+    const q=e.target.value.toLowerCase(),res=document.getElementById('bookResults');
+    if(q.length<1){res.style.display='none';return;}
+    const f=booksData.filter(b=>b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q));
+    if(f.length>0){res.innerHTML=f.map(b=>`<button type="button" class="list-group-item list-group-item-action" onclick="selectBook(${b.id},'${b.title}')"><strong>${b.title}</strong><br><small class="text-muted">${b.author}</small></button>`).join('');res.style.display='block';}
+    else{res.style.display='none';}
+});
+
+function selectUser(id,email){document.getElementById('selectedUserId').value=id;document.getElementById('userSearch').value=email;document.getElementById('userResults').style.display='none';document.getElementById('selectedUserName').textContent='✓ '+email;}
+function selectBook(id,title){document.getElementById('selectedBookId').value=id;document.getElementById('bookSearch').value=title;document.getElementById('bookResults').style.display='none';document.getElementById('selectedBookName').textContent='✓ '+title;}
+document.addEventListener('click',function(e){if(!e.target.closest('#userSearch')&&!e.target.closest('#userResults'))document.getElementById('userResults').style.display='none';if(!e.target.closest('#bookSearch')&&!e.target.closest('#bookResults'))document.getElementById('bookResults').style.display='none';});
+</script>
+{% endblock %}
