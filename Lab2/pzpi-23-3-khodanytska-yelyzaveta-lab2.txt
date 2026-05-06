@@ -1,1 +1,416 @@
+Міністерство освіти і науки України 
+Харківський національний університет радіоелектроніки
 
+
+
+
+Кафедра програмної інженерії
+
+
+Звіт
+з лабораторної роботи № 2
+з дисципліни «Архітектура програмного забезпечення»
+на тему: «Програмна система для автоматизації роботи бібліотек»
+
+
+
+Виконала:                                                                 Перевірив:
+ст. гр. ПЗПІ-23-3                                                ст. викладач катедри ПІ
+Ходаницька Єлизавета                                         Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+
+
+
+
+
+Харків - 2026
+________________
+
+
+1 ІСТОРІЯ ЗМІН
+№
+	Дата
+	Версія звіту
+	Опис змін та виправлень
+	1
+	14.04.2026
+	0.1
+	Початок роботи над звітом
+	2
+	21.04.2026
+	0.2
+	Редагування попередньої версії
+	
+
+2 ЗАВДАННЯ 
+Метою лабораторної роботи є розробка мобільного застосунку як частини програмної системи для автоматизації роботи бібліотеки, а також забезпечення його взаємодії із серверною частиною через REST API та відображення архітектури за допомогою UML-діаграм.
+
+
+3 ОПИС ВИКОНАНОЇ РОБОТИ 
+У ході виконання лабораторної роботи було розроблено мобільний застосунок для платформи Android з використанням мови програмування Kotlin та фреймворку Jetpack Compose. Застосунок є складовою частиною програмної системи автоматизації роботи бібліотеки, архітектура якої була сформована на попередніх етапах розробки. Мобільний клієнт взаємодіє із серверною частиною через REST API, що забезпечує обмін даними у форматі JSON та відповідає клієнт-серверній архітектурі.
+Функціонально застосунок реалізовано у вигляді інтерфейсу з кількома вкладками, зокрема каталогом книг, бронюванням, позиками та профілем користувача. Основні сценарії взаємодії користувача із системою відображено на UML діаграмі прецедентів (див. рис. Б.1). Згідно з цією діаграмою, користувач може виконати вхід у систему, переглядати каталог, створювати бронювання, скасовувати їх, переглядати інформацію про власний профіль та виходити з акаунту. Таким чином мобільний застосунок виступає клієнтським інтерфейсом доступу до функціоналу бібліотечної системи.
+Архітектура застосунку представлена на UML діаграмі компонентів (див. рис. Б.2). Вона побудована за принципами розділення відповідальностей, де інтерфейс користувача реалізує відображення даних, ViewModel обробляє стан і логіку взаємодії, а рівень Repository відповідає за отримання даних із серверу. Передача даних відбувається послідовно: від інтерфейсу користувача до ViewModel, далі до Repository, після чого формується запит до REST API, який передається на сервер. Сервер обробляє запит, взаємодіє з базою даних і повертає результат, який відображається у застосунку.
+Основні сценарії роботи користувача із застосунком відображено на UML діаграмі діяльності (див. рис. Б.3). Після запуску застосунку користувач проходить авторизацію. У разі успішного входу відкривається доступ до функціоналу перегляду каталогу. Користувач може обрати книгу та створити бронювання, після чого відповідний запит надсилається на сервер і повертається підтвердження. Також передбачено можливість скасування бронювання: користувач обирає відповідний запис, ініціює запит на скасування, після чого сервер оновлює стан даних, а застосунок відображає актуальний список бронювань. У випадку помилки авторизації або виконання операції користувачу виводиться повідомлення про помилку.
+Взаємодія між мобільним застосунком та серверною частиною системи детально відображена на UML діаграмі взаємодії (див. рис. Б.4). Наприклад, під час створення бронювання користувач ініціює запит у застосунку, який передається через REST API на сервер. Сервер виконує обробку запиту, звертається до бази даних для збереження інформації та повертає відповідь у вигляді JSON. Отримана відповідь передається назад у застосунок, де відображається користувачу. Аналогічним чином відбувається і скасування бронювання.
+У застосунку реалізовано лише клієнтську логіку, тоді як основні бізнес-процеси, такі як обробка бронювання, зміна статусів книг і створення позик, виконуються на сервері, що забезпечує цілісність даних та узгодженість роботи всієї системи. Функціонал роботи з позиками на даному етапі реалізований частково, оскільки його повна підтримка залежить від завершення розробки веб-інтерфейсу адміністратора, який відповідає за оформлення видачі книг.
+Назва інструменту та версія: модель GPT-5.3, план Go.
+Мета використання: Використання ШІ було необхідне через відсутність досвіду роботи з Android, Kotlin та Jetpack Compose. ШІ допомагав зрозуміти архітектуру додатку, роботу з Retrofit, ViewModel, навігацію та швидко реалізувати функції бронювання книг.
+Внесок автора: Я самостійно підключила додаток до власного бекенду на Flask, адаптувала ендпоінти під свою базу даних, виправляла помилки компіляції, тестувала запити, налаштовувала AndroidManifest.xml для мережевих дозволів та адаптувала інтерфейс під вимоги лабораторної роботи.
+
+
+4 ВИСНОВКИ
+Під час виконання лабораторної роботи було успішно розроблено мобільний застосунок, який інтегрується з існуючою системою автоматизації бібліотеки, забезпечує базовий функціонал для користувачів і демонструє узгодженість архітектурних рішень між різними компонентами системи.
+
+
+5 ВИКОРИСТАНІ ДЖЕРЕЛА 
+1. Get started with Kotlin | Kotlin. Kotlin Help. URL: https://kotlinlang.org/docs/getting-started.html (date of access: 21.04.2026).
+2. W3Schools.com. W3Schools Online Web Tutorials. URL: https://www.w3schools.com/KOTLIN/index.php (date of access: 21.04.2026).
+3. Diagram design 101: tips for effective visual diagrams to supercharge innovation. MiroBlog. URL: https://miro.com/blog/diagram-design/ (date of access: 21.04.2026).
+
+
+________________
+
+
+ДОДАТОК А 
+Відеозапис 
+Відеозапис презентації результатів лабораторної роботи:
+https://youtu.be/7rdlkAXF2WI
+Хронологічний опис відеозапису:
+0:00 — Вступ
+0:30 — Основні сценарії взаємодії користувача з системою
+1:44 — Архітектура застосунку
+2:15 — Основні сценарії взаємодії користувача з застосунком
+3:10 — Взаємодія між мобільним застосунком та серверною частиною системи
+4:04 — Висновки
+4:18 — Демонстрація
+________________
+
+
+ДОДАТОК Б 
+Діаграми
+  
+
+Рисунок Б.1 — Use Case Diagram
+
+
+  
+
+Рисунок Б.2 — Component Diagram
+
+
+  
+
+Рисунок Б.3 — Activity Diagram
+  
+
+Рисунок Б.4 — Interaction Diagram
+________________
+
+
+ДОДАТОК В 
+Програмний код 
+В.1 RetrofitClient
+ 1 package com.example.apz.data.api
+ 2 
+ 3 import okhttp3.OkHttpClient
+ 4 import okhttp3.logging.HttpLoggingInterceptor
+ 5 import retrofit2.Retrofit
+ 6 import retrofit2.converter.gson.GsonConverterFactory
+ 7 import com.example.apz.utils.Constants
+ 8 
+ 9 object RetrofitClient {
+10 
+11     private val logging = HttpLoggingInterceptor().apply {
+12         level = HttpLoggingInterceptor.Level.BODY
+13     }
+14 
+15     private val client = OkHttpClient.Builder()
+16         .addInterceptor(logging)
+17         .build()
+18 
+19     val api: LibraryApi by lazy {
+20         Retrofit.Builder()
+21             .baseUrl(Constants.BASE_URL)
+22             .client(client)
+23             .addConverterFactory(GsonConverterFactory.create())
+24             .build()
+25             .create(LibraryApi::class.java)
+26     }
+27 }
+
+
+В.2 Book.kt
+ 1 package com.example.apz.data.models
+ 2 
+ 3 data class BookResponse(
+ 4     val book_id: Int,
+ 5     val title: String,
+ 6     val author: String,
+ 7     val status: String
+ 8 )
+ 9 
+10 data class BookDetail(
+11     val book_id: Int,
+12     val title: String,
+13     val author: String,
+14     val category: String?,
+15     val isbn: String?,
+16     val condition: String?,
+17     val status: String,
+18     val location: String?,
+19     val tags: String?
+20 )
+
+
+В.2 LibraryRepository
+1 package com.example.apz.data.repository
+ 2 
+ 3 import android.content.Context
+ 4 import com.example.apz.data.api.RetrofitClient
+ 5 import com.example.apz.data.models.*
+ 6 import com.example.apz.utils.DataStoreHelper
+ 7 import com.example.apz.utils.Result
+ 8 
+ 9 class LibraryRepository(private val context: Context) {
+10 
+11     private val api = RetrofitClient.api
+12 
+13     suspend fun login(email: String, password: String): Result<LoginResponse> = try {
+14         val response = api.login(LoginRequest(email, password))
+15         if (response.isSuccessful && response.body() != null) {
+16             val user = response.body()!!
+17             DataStoreHelper.saveUserSession(context, user.user_id, user.name, user.email, user.role)
+18             Result.Success(user)
+19         } else {
+20             Result.Error("Помилка входу: ${response.code()}")
+21         }
+22     } catch (e: Exception) {
+23         Result.Error(e.localizedMessage ?: "Невідома помилка мережі")
+24     }
+25 
+26     suspend fun searchBooks(query: String): Result<List<BookResponse>> = try {
+27         Result.Success(api.searchBooks(query))
+28     } catch (e: Exception) {
+29         Result.Error(e.localizedMessage ?: "Помилка пошуку")
+30     }
+31 
+32     suspend fun getActiveLoans(): Result<List<ActiveLoanResponse>> {
+33         val userId = DataStoreHelper.getUserId(context) ?: return Result.Error("Користувач не авторизований")
+34         return try {
+35             Result.Success(api.getActiveLoans(userId))
+36         } catch (e: Exception) {
+37             Result.Error(e.localizedMessage ?: "Помилка завантаження позик")
+38         }
+39     }
+40 
+41     suspend fun extendLoan(loanId: Int, days: Int): Result<ExtendLoanResponse> = try {
+42         val response = api.extendLoan(loanId, ExtendLoanRequest(days))
+43         if (response.isSuccessful && response.body() != null) {
+44             Result.Success(response.body()!!)
+45         } else {
+46             Result.Error("Помилка продовження: ${response.code()}")
+47         }
+48     } catch (e: Exception) {
+49         Result.Error(e.localizedMessage ?: "Помилка мережі")
+50     }
+51 
+52     suspend fun createReservation(bookId: Int): Result<ReservationResponse> {
+53         val userId = DataStoreHelper.getUserId(context) ?: return Result.Error("Користувач не авторизований")
+54         return try {
+55             val response = api.createReservation(CreateReservationRequest(userId, bookId))
+56             if (response.isSuccessful && response.body() != null) {
+57                 Result.Success(response.body()!!)
+58             } else {
+59                 Result.Error("Помилка бронювання: ${response.code()}")
+60             }
+61         } catch (e: Exception) {
+62             Result.Error(e.localizedMessage ?: "Помилка мережі")
+63         }
+64     }
+65 
+66     suspend fun logout() {
+67         DataStoreHelper.clearSession(context)
+68     }
+69 
+70     // Додай цей метод у клас:
+71     suspend fun getActiveReservations(userId: Int): Result<List<ReservationResponse>> {
+72         return try {
+73             val response = api.getActiveReservations(userId)
+74             Result.Success(response)
+75         } catch (e: Exception) {
+76             Result.Error(e.localizedMessage ?: "Помилка завантаження бронювань")
+77         }
+78     }
+79 
+80     suspend fun cancelReservation(reservationId: Int): Result<CancelReservationResponse> {
+81         return try {
+82             val response = api.cancelReservation(reservationId)
+83             if (response.isSuccessful && response.body() != null) {
+84                 Result.Success(response.body()!!)
+85             } else {
+86                 Result.Error("Помилка скасування: ${response.code()}")
+87             }
+88         } catch (e: Exception) {
+89             Result.Error(e.localizedMessage ?: "Помилка мережі")
+90         }
+91     }
+92 }
+
+
+B.4 BookListScreen
+  1 package com.example.apz.presentation.ui.catalog
+  2 
+  3 import androidx.compose.foundation.layout.*
+  4 import androidx.compose.foundation.lazy.LazyColumn
+  5 import androidx.compose.foundation.lazy.items
+  6 import androidx.compose.material3.*
+  7 import androidx.compose.runtime.*
+  8 import androidx.compose.ui.Alignment
+  9 import androidx.compose.ui.Modifier
+ 10 import androidx.compose.ui.unit.dp
+ 11 import androidx.lifecycle.viewmodel.compose.viewModel
+ 12 import com.example.apz.data.models.BookResponse
+ 13 import com.example.apz.presentation.viewmodel.BookViewModel
+ 14 import androidx.compose.material3.ExperimentalMaterial3Api
+15 import com.example.apz.presentation.viewmodel.ReservationViewModel
+ 16 
+ 17 @Composable
+ 18 fun BookListScreen(
+ 19     bookViewModel: BookViewModel = viewModel(),
+ 20     reservationViewModel: ReservationViewModel = viewModel(),
+ 21     onBookClick: (BookResponse) -> Unit
+ 22 ) {
+ 23     var searchQuery by remember { mutableStateOf("") }
+ 24     val books by bookViewModel.books.collectAsState()
+ 25     val isLoading by bookViewModel.isLoading.collectAsState()
+ 26     val reservationMessage by reservationViewModel.message.collectAsState()
+ 27     
+ 28     LaunchedEffect(Unit) {
+ 29         bookViewModel.searchBooks("")
+ 30     }
+ 31 
+ 32     // Показуємо Snackbar для бронювання
+ 33     if (reservationMessage != null) {
+ 34         Snackbar(
+ 35             modifier = Modifier.padding(8.dp),
+ 36             action = {
+ 37                 TextButton(onClick = { reservationViewModel.clearMessage() }) {
+ 38                     Text("OK")
+ 39                 }
+ 40             }
+ 41         ) {
+ 42             Text(reservationMessage ?: "")
+ 43         }
+ 44     }
+ 45 
+ 46     Column(modifier = Modifier.fillMaxSize()) {
+ 47         OutlinedTextField(
+ 48             value = searchQuery,
+ 49             onValueChange = {
+ 50                 searchQuery = it
+ 51                 bookViewModel.searchBooks(it)
+ 52             },
+ 53             label = { Text("Пошук книг...") },
+ 54             modifier = Modifier
+ 55                 .fillMaxWidth()
+ 56                 .padding(16.dp),
+ 57             singleLine = true,
+ 58             trailingIcon = {
+ 59                 if (searchQuery.isNotEmpty()) {
+ 60                     IconButton(onClick = { searchQuery = "" }) {
+ 61                         Text("✕")
+ 62                     }
+ 63                 }
+ 64             }
+ 65         )
+ 66 
+ 67         if (isLoading) {
+ 68             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+ 69                 CircularProgressIndicator()
+ 70             }
+ 71         } else if (books.isEmpty()) {
+ 72             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+ 73                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+ 74                     Text("Книг не знайдено")
+ 75                     Text("Спробуйте інший пошук", style = MaterialTheme.typography.bodySmall)
+ 76                 }
+ 77             }
+ 78         } else {
+ 79             LazyColumn(
+ 80                 modifier = Modifier.fillMaxSize(),
+ 81                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+ 82                 verticalArrangement = Arrangement.spacedBy(8.dp)
+ 83             ) {
+ 84                 items(books) { book ->
+ 85                     BookItem(
+ 86                         book = book,
+ 87                         onClick = { onBookClick(book) },
+ 88                         onReserveClick = {
+ 89                             reservationViewModel.reserveBook(book.book_id)
+ 90                         }
+ 91                     )
+ 92                 }
+ 93             }
+ 94         }
+ 95     }
+ 96 }
+ 97 
+ 98 @OptIn(ExperimentalMaterial3Api::class)
+ 99 @Composable
+100 fun BookItem(
+101     book: BookResponse,
+102     onClick: () -> Unit, // Для переходу в деталі (якщо буде)
+103     onReserveClick: (Int) -> Unit // Новий колбек для бронювання
+104 ) {
+105     Card(
+106         onClick = onClick,
+107         modifier = Modifier.fillMaxWidth()
+108     ) {
+109         Column(modifier = Modifier.padding(16.dp)) {
+110             Row(
+111                 modifier = Modifier.fillMaxWidth(),
+112                 horizontalArrangement = Arrangement.SpaceBetween,
+113                 verticalAlignment = Alignment.CenterVertically
+114             ) {
+115                 Column(modifier = Modifier.weight(1f)) {
+116                     Text(
+117                         text = book.title,
+118                         style = MaterialTheme.typography.titleMedium
+119                     )
+120                     Text(
+121                         text = book.author,
+122                         style = MaterialTheme.typography.bodyMedium,
+123                         color = MaterialTheme.colorScheme.onSurfaceVariant
+124                     )
+125                 }
+126 
+127                 // Кнопка бронювання (тільки якщо доступна)
+128                 if (book.status == "available") {
+129                     Button(
+130                         onClick = { onReserveClick(book.book_id) },
+131                         modifier = Modifier.height(36.dp)
+132                     ) {
+133                         Text("📌")
+134                     }
+135                 }
+136             }
+137 
+138             Spacer(modifier = Modifier.height(8.dp))
+139             Text(
+140                 text = "Статус: ${book.status}",
+141                 style = MaterialTheme.typography.bodySmall,
+142                 color = when (book.status) {
+143                     "available" -> MaterialTheme.colorScheme.primary
+144                     "issued" -> MaterialTheme.colorScheme.error
+145                     else -> MaterialTheme.colorScheme.onSurfaceVariant
+146                 }
+147             )
+148         }
+149     }
+150 }
