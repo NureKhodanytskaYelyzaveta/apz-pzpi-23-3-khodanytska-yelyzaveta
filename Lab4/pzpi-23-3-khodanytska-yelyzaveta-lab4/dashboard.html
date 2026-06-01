@@ -1,0 +1,250 @@
+{% extends 'core/admin/base_admin.html' %}
+{% block title %}Дашборд — Адмін{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Дашборд</h1>
+  <p>Огляд стану бібліотеки</p>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="stat-card" style="--c: #6c63ff">
+      <div class="stat-label">Користувачі</div>
+      <div class="stat-value">{{ total_users }}</div>
+      <div class="stat-desc">
+        {{ users_by_role.admin }} адмін ·
+        {{ users_by_role.librarian }} бібліотекар ·
+        {{ users_by_role.reader }} читач
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card" style="--c: #34d399">
+      <div class="stat-label">Книги</div>
+      <div class="stat-value">{{ total_books }}</div>
+      <div class="stat-desc">
+        {{ books_by_status.available }} доступних
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card" style="--c: #a78bfa">
+      <div class="stat-label">Активні позики</div>
+      <div class="stat-value">{{ active_loans }}</div>
+      <div class="stat-desc">на руках у читачів</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card" style="--c: #f87171">
+      <div class="stat-label">Прострочені</div>
+      <div class="stat-value">{{ overdue_loans }}</div>
+      <div class="stat-desc">потребують уваги</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-5">
+    <div class="adm-card">
+      <div class="adm-card-header">
+        <h5><i class="bi bi-book me-2"></i>Книги за статусом</h5>
+        <a href="{% url 'admin_books_list' %}" class="btn-adm-ghost" style="font-size:12px; padding:5px 10px;">
+          Всі →
+        </a>
+      </div>
+      <div class="adm-card-body">
+        {% with total=total_books %}
+          {% if total %}
+            <div class="bar-row">
+              <span class="bar-label">Доступні</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:{% widthratio books_by_status.available total 100 %}%; background: linear-gradient(90deg,#34d399,#6ee7b7);"></div>
+              </div>
+              <span class="bar-count">{{ books_by_status.available }}</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Видані</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:{% widthratio books_by_status.issued total 100 %}%; background: linear-gradient(90deg,#6c63ff,#a78bfa);"></div>
+              </div>
+              <span class="bar-count">{{ books_by_status.issued }}</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Заброньовані</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:{% widthratio books_by_status.reserved total 100 %}%; background: linear-gradient(90deg,#f59e0b,#fbbf24);"></div>
+              </div>
+              <span class="bar-count">{{ books_by_status.reserved }}</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Списані</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:{% widthratio books_by_status.withdrawn total 100 %}%; background: linear-gradient(90deg,#64748b,#94a3b8);"></div>
+              </div>
+              <span class="bar-count">{{ books_by_status.withdrawn }}</span>
+            </div>
+          {% else %}
+            <div class="adm-empty"><i class="bi bi-book"></i><p>Книг немає</p></div>
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+
+    <div class="adm-card">
+      <div class="adm-card-header">
+        <h5><i class="bi bi-people me-2"></i>Користувачі за роллю</h5>
+        <a href="{% url 'admin_users_list' %}" class="btn-adm-ghost" style="font-size:12px; padding:5px 10px;">
+          Всі →
+        </a>
+      </div>
+      <div class="adm-card-body">
+        {% with total=total_users %}
+          {% if total %}
+            <div class="bar-row">
+              <span class="bar-label">Читачі</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:{% widthratio users_by_role.reader total 100 %}%;"></div>
+              </div>
+              <span class="bar-count">{{ users_by_role.reader }}</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Бібліотекарі</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:{% widthratio users_by_role.librarian total 100 %}%; background: linear-gradient(90deg,#06b6d4,#67e8f9);"></div>
+              </div>
+              <span class="bar-count">{{ users_by_role.librarian }}</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Адміни</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:{% widthratio users_by_role.admin total 100 %}%; background: linear-gradient(90deg,#f87171,#fca5a5);"></div>
+              </div>
+              <span class="bar-count">{{ users_by_role.admin }}</span>
+            </div>
+          {% else %}
+            <div class="adm-empty"><i class="bi bi-people"></i><p>Користувачів немає</p></div>
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="adm-card">
+      <div class="adm-card-header">
+        <h5><i class="bi bi-clock-history me-2"></i>Останні позики</h5>
+        <a href="{% url 'admin_reports' %}" class="btn-adm-ghost" style="font-size:12px; padding:5px 10px;">
+          Звіти →
+        </a>
+      </div>
+      <table class="adm-table">
+        <thead>
+          <tr>
+            <th>Книга</th>
+            <th>Читач</th>
+            <th>Термін</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for loan in recent_loans %}
+          <tr {% if not loan.return_date and loan.due_date < now %}class="row-overdue"{% endif %}>
+            <td style="font-weight:500; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+              {{ loan.book.title }}
+            </td>
+            <td style="color: var(--muted); font-size:12px;">{{ loan.user.email }}</td>
+            <td style="font-size:12px; color: var(--muted);">{{ loan.due_date|date:"d.m.Y" }}</td>
+            <td>
+              {% if loan.return_date %}
+                <span class="badge rounded-pill badge-available">повернуто</span>
+              {% elif loan.due_date < now %}
+                <span class="badge rounded-pill badge-withdrawn">прострочено</span>
+              {% else %}
+                <span class="badge rounded-pill badge-issued">активна</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4">
+              <div class="adm-empty"><i class="bi bi-inbox"></i><p>Позик немає</p></div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="adm-card">
+      <div class="adm-card-header"><h5><i class="bi bi-lightning me-2"></i>Швидкі дії</h5></div>
+      <div class="adm-card-body d-flex flex-wrap gap-2">
+        <a href="{% url 'admin_users_list' %}" class="btn-adm-primary">
+          <i class="bi bi-people"></i> Користувачі
+        </a>
+        <a href="{% url 'admin_books_list' %}" class="btn-adm-primary" style="background:#34d399;">
+          <i class="bi bi-book"></i> Книги
+        </a>
+        <a href="{% url 'admin_reports' %}" class="btn-adm-primary" style="background:#f59e0b;">
+          <i class="bi bi-bar-chart-line"></i> Звіти
+        </a>
+        <a href="{% url 'librarian_dashboard' %}" class="btn-adm-ghost">
+          <i class="bi bi-person-workspace"></i> Бібліотекар
+        </a>
+      </div>
+    </div>
+
+    <div class="adm-card">
+      <div class="adm-card-header">
+        <h5><i class="bi bi-database me-2"></i>Резервні копії БД</h5>
+      </div>
+      <div class="adm-card-body">
+
+        <div style="margin-bottom: 20px;">
+          <div style="font-size:13px; color:var(--muted); margin-bottom:10px;">
+            Завантажити поточний стан бази даних як файл <code style="color:var(--accent-soft);">.sqlite3</code>
+          </div>
+          <a href="{% url 'backup_create' %}" class="btn-adm-primary">
+            <i class="bi bi-download"></i> Створити та завантажити бекап
+          </a>
+        </div>
+
+        <hr style="border-color: var(--border); margin: 16px 0;">
+
+        <div>
+          <div style="font-size:13px; color:var(--muted); margin-bottom:10px;">
+            Відновити БД з файлу бекапу. Вкажіть точну назву файлу (напр. <code style="color:var(--accent-soft);">backup_20250601_120000.sqlite3</code>)
+          </div>
+          <form method="post" action="{% url 'backup_restore' %}"
+                onsubmit="return confirm('Відновити БД? Поточні дані будуть замінені.');">
+            {% csrf_token %}
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+              <input type="text"
+                     name="filename"
+                     class="adm-input"
+                     placeholder="backup_YYYYMMDD_HHMMSS.sqlite3"
+                     style="flex:1; min-width:260px;"
+                     required>
+              <button type="submit" class="btn-adm-danger" style="padding: 8px 14px; font-size:13px;">
+                <i class="bi bi-arrow-counterclockwise"></i> Відновити
+              </button>
+            </div>
+          </form>
+          <div style="font-size:11px; color:var(--muted); margin-top:8px;">
+            <i class="bi bi-info-circle"></i>
+            Перед відновленням автоматично зберігається аварійна копія поточної БД.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const now = new Date();
+</script>
+{% endblock %}
